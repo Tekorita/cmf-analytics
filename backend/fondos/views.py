@@ -1,32 +1,19 @@
-import os
-import json
-import http.client
 from django.http import JsonResponse
 from django.views import View
-from datetime import datetime
-
-HEADERS = {
-    "Authorization": f"Basic {os.getenv('CMF_BASIC_AUTH')}",
-    "Cookie": os.getenv("CMF_COOKIE"),
-}
+from .use_cases import (
+    obtener_fondos,
+    obtener_series,
+    obtener_valores_por_fecha,
+    obtener_valores_comparativos
+)
+from .serializers import SerieValorCuotaComparativaSerializer
 
 
 class FondosDataView(View):
     def get(self, request):
         try:
-            conn = http.client.HTTPSConnection("www.cmfchile.cl")
-            conn.request(
-                "GET",
-                "/sitio/api/fmide/identificacion/json",
-                "",  # payload vacío
-                HEADERS,
-            )
-            response = conn.getresponse()
-            raw_data = response.read().decode("utf-8")
-            parsed_data = json.loads(raw_data)
-
-            return JsonResponse(parsed_data, safe=False)
-
+            data = obtener_fondos()
+            return JsonResponse(data, safe=False)
         except Exception as e:
             return JsonResponse({
                 "error": "No se pudo obtener datos desde el portal de la CMF",
@@ -37,18 +24,8 @@ class FondosDataView(View):
 class FondosSeriesView(View):
     def get(self, request):
         try:
-            conn = http.client.HTTPSConnection("www.cmfchile.cl")
-            conn.request(
-                "GET",
-                "/sitio/api/foser/series/json",
-                "",
-                HEADERS,
-            )
-            response = conn.getresponse()
-            data = json.loads(response.read())
-
+            data = obtener_series()
             return JsonResponse(data, safe=False)
-
         except Exception as e:
             return JsonResponse({
                 "error": "No se pudo obtener series de fondos desde CMF",
@@ -58,28 +35,36 @@ class FondosSeriesView(View):
 
 class ValoresSerieView(View):
     def get(self, request):
-        fecha = request.GET.get("fecha")  # formato esperado: YYYYMMDD
+        fecha = request.GET.get("fecha")
         if not fecha:
             return JsonResponse({"error": "Parámetro 'fecha' requerido en formato YYYYMMDD"}, status=400)
 
         try:
-            datetime.strptime(fecha, "%Y%m%d")  # validar fecha
-            conn = http.client.HTTPSConnection("www.cmfchile.cl")
-            conn.request(
-                "GET",
-                f"/sitio/api/fmcfm/consulta_cartola/{fecha}/json",
-                "",
-                HEADERS,
-            )
-            response = conn.getresponse()
-            data = json.loads(response.read())
-
+            data = obtener_valores_por_fecha(fecha)
             return JsonResponse(data, safe=False)
-
-        except ValueError:
-            return JsonResponse({"error": "Formato de fecha inválido, debe ser YYYYMMDD"}, status=400)
+        except ValueError as ve:
+            return JsonResponse({"error": str(ve)}, status=400)
         except Exception as e:
             return JsonResponse({
                 "error": "No se pudo obtener cartola desde CMF",
+                "detalle": str(e)
+            }, status=500)
+
+
+class ValoresSeriesComparativoView(View):
+    def get(self, request):
+        series = request.GET.get("series")
+        fechas = request.GET.get("fechas")
+
+        if not series or not fechas:
+            return JsonResponse({"error": "Parámetros 'series' y 'fechas' son requeridos"}, status=400)
+
+        try:
+            raw_result = obtener_valores_comparativos(series.split(","), fechas.split(","))
+            serialized = SerieValorCuotaComparativaSerializer(raw_result).data
+            return JsonResponse(serialized, safe=False)
+        except Exception as e:
+            return JsonResponse({
+                "error": "No se pudo obtener comparativo de valores",
                 "detalle": str(e)
             }, status=500)
