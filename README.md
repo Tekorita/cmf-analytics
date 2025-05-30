@@ -34,7 +34,7 @@ Aplicación web full-stack construida con **Django + React** para visualizar, co
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tuusuario/cmf-analytics.git
+git clone https://github.com/Tekorita/cmf-analytics.git
 cd cmf-analytics
 ```
 
