@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
-from .models import Fondo, Serie, ValorCuota
+from .models import Administradora, Fondo, Serie, ValorCuota
 from .use_cases import obtener_ranking_mensual, obtener_alertas_insights
 from .serializers import SerieValorCuotaComparativaSerializer
 
@@ -21,11 +21,20 @@ class FondosDataView(View):
 
 class FondosSeriesView(View):
     def get(self, request):
+        run_fondo = request.GET.get("run_fondo")
+
         try:
-            data = list(Serie.objects.select_related("fondo").values(
-                "id", "nombre", "fondo__id", "fondo__nombre"
+            qs = Serie.objects.select_related("fondo")
+
+            if run_fondo:
+                qs = qs.filter(fondo__run_fondo=run_fondo)
+
+            data = list(qs.values(
+                "id", "nombre", "fondo__id", "fondo__nombre", "fondo__run_fondo"
             ))
+
             return JsonResponse(data, safe=False)
+
         except Exception as e:
             return JsonResponse({
                 "error": "No se pudo obtener series desde la base de datos",
@@ -53,6 +62,7 @@ class ValoresSerieView(View):
 
 class ValoresSeriesComparativoView(View):
     def get(self, request):
+        # import pdb; pdb.set_trace()
         series = request.GET.get("series")
         fechas = request.GET.get("fechas")
 
@@ -95,9 +105,16 @@ class RankingMensualView(View):
         anio = request.GET.get("anio")
         mes = request.GET.get("mes")
         fondo_id = request.GET.get("fondo")
-        agf_id = request.GET.get("agf")
+        agf_nombre = request.GET.get("agf")  # ahora recibe el nombre
         page = request.GET.get("page", 1)
-        page_size = request.GET.get("page_size", 50)
+        page_size = request.GET.get("page_size", 25)
+        # Buscar el ID de la AGF si se recibe nombre
+        agf_id = None
+        if agf_nombre:
+            try:
+                agf_id = Administradora.objects.get(nombre=agf_nombre).id
+            except AdministradoraFondos.DoesNotExist:
+                return JsonResponse({"error": f"No se encontró una AGF con nombre: {agf_nombre}"}, status=400)
 
         try:
             data = obtener_ranking_mensual(
@@ -121,17 +138,31 @@ class AlertasInsightsView(View):
     def get(self, request):
         fecha_inicio = request.GET.get("fecha_inicio")
         fecha_fin = request.GET.get("fecha_fin")
-        umbral = request.GET.get("umbral", "0.05")  # por defecto 5%
+        umbral = request.GET.get("umbral", "0.001")
+        agf = request.GET.get('agf[nombre]')
+        fondo = request.GET.get('fondo[run_fondo]')
         page = int(request.GET.get("page", 1))
         page_size = int(request.GET.get("page_size", 50))
 
         if not fecha_inicio or not fecha_fin:
-            return JsonResponse({"error": "Los parámetros 'fecha_inicio' y 'fecha_fin' son requeridos (formato YYYYMMDD)."}, status=400)
+            return JsonResponse({
+                "error": "Los parámetros 'fecha_inicio' y 'fecha_fin' son requeridos (formato YYYYMMDD)."
+            }, status=400)
 
         try:
-            insights = obtener_alertas_insights(fecha_inicio, fecha_fin, float(umbral), page, page_size)
-            return JsonResponse(insights, safe=False)
+            alertas = obtener_alertas_insights(
+                fecha_inicio, fecha_fin,
+                float(umbral),
+                page, page_size,
+                agf=agf,
+                fondo=fondo
+            )
+            # import pdb; pdb.set_trace()
+            return JsonResponse(alertas, safe=False)
         except ValueError as e:
             return JsonResponse({"error": str(e)}, status=400)
         except Exception as e:
-            return JsonResponse({"error": "Error al procesar el análisis de alertas", "detalle": str(e)}, status=500)
+            return JsonResponse({
+                "error": "Error al procesar el análisis de alertas",
+                "detalle": str(e)
+            }, status=500)

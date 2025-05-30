@@ -6,16 +6,29 @@ import {
   PieChart, Pie, Cell
 } from "recharts";
 import { getValoresComparativos } from "../services/api";
-import SelectorAgf from "../components/selectorAgf";
+import SelectorAdministradora from "../components/SelectorAdministradora";
 import SelectorFondo from "../components/SelectorFondo";
 import SelectorSerie from "../components/SelectorSerie";
+import ResumenTabla from "../components/ResumenTabla";
+import ResumenTorta from "../components/ResumenTorta";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export default function DashboardPage() {
-  const [fechas, setFechas] = useState("");
+  const [fechas, setFechas] = useState([dayjs()]);
   const [valores, setValores] = useState(null);
   const [agf, setAgf] = useState(null);
   const [fondo, setFondo] = useState(null);
   const [series, setSeries] = useState([]);
+
+  const handleFechaChange = (value, index) => {
+    const nuevasFechas = [...fechas];
+    nuevasFechas[index] = value;
+    setFechas(nuevasFechas);
+  };
+
+  const agregarFecha = () => setFechas([...fechas, dayjs()]);
 
   return (
     <Container maxWidth="lg">
@@ -24,22 +37,31 @@ export default function DashboardPage() {
       </Typography>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
-        <SelectorAgf onSelect={setAgf} />
-        <SelectorFondo agfId={agf?.id} onSelect={setFondo} />
+        <SelectorAdministradora onSelect={setAgf} />
+        <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
         <SelectorSerie fondoRun={fondo?.run_fondo} onChange={setSeries} />
-        <TextField
-          label="Fechas (YYYYMMDD, separado por comas)"
-          variant="outlined"
-          size="small"
-          value={fechas}
-          onChange={(e) => setFechas(e.target.value)}
-          sx={{ width: 300 }}
-        />
+
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {fechas.map((fecha, index) => (
+            <DatePicker
+              key={index}
+              label={`Fecha ${index + 1}`}
+              value={fecha}
+              format="YYYYMMDD"
+              onChange={(newValue) => handleFechaChange(newValue, index)}
+              slotProps={{ textField: { size: "small" } }}
+            />
+          ))}
+          <Button variant="outlined" onClick={agregarFecha}>
+            + Añadir fecha
+          </Button>
+        </LocalizationProvider>
+
         <Button
           variant="contained"
           onClick={() => {
             const seriesIds = series.map((s) => s.nombre);
-            const fechasList = fechas.split(",").map(f => f.trim());
+            const fechasList = fechas.map(f => f.format("YYYYMMDD"));
 
             getValoresComparativos(seriesIds, fechasList).then(setValores);
           }}
@@ -63,7 +85,7 @@ export default function DashboardPage() {
                   dataKey="valor_cuota"
                   name={serie}
                   data={data}
-                  stroke={`#${Math.floor(Math.random()*16777215).toString(16)}`}
+                  stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
                 />
               ))}
             </LineChart>
@@ -72,27 +94,11 @@ export default function DashboardPage() {
       </Box>
 
       <Box mt={4}>
-        <Typography variant="h6">🥧 Participación final por serie</Typography>
         {valores && (
-          <PieChart width={400} height={300}>
-            <Pie
-              data={Object.entries(valores).map(([serie, data]) => ({
-                name: serie,
-                value: data[data.length - 1]?.valor_cuota || 0,
-              }))}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              fill="#8884d8"
-              label
-            >
-              {Object.keys(valores).map((_, index) => (
-                <Cell key={index} fill={`#${Math.floor(Math.random()*16777215).toString(16)}`} />
-              ))}
-            </Pie>
-          </PieChart>
+          <Box sx={{ display: "flex", gap: 4 }}>
+            {valores && <ResumenTabla data={valores} />}
+            {valores && <ResumenTorta valores={valores} />}
+          </Box>
         )}
       </Box>
     </Container>
