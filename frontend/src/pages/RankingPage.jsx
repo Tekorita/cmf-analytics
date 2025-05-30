@@ -14,6 +14,7 @@ import {
   Paper,
   Pagination
 } from '@mui/material';
+import '../styles/estilos.css';
 import { getRankingMensual } from '../services/api';
 import SelectorAdministradora from '../components/SelectorAdministradora';
 
@@ -53,7 +54,7 @@ export default function RankingPage() {
         📈 Ranking de Fondos por Rentabilidad Mensual
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+      <Box className="filtros-container" sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <TextField
           label="Año"
           type="number"

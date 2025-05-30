@@ -10,6 +10,7 @@ import {
   Button,
   Stack
 } from '@mui/material';
+import '../styles/estilos.css';
 import { getAlertas } from '../services/api';
 import SelectorAdministradora from '../components/SelectorAdministradora';
 import SelectorFondo from '../components/SelectorFondo';
@@ -66,46 +67,47 @@ export default function AlertasPage() {
       <Typography variant="h5" gutterBottom>
         🔔 Alertas e Insights Automáticos
       </Typography>
-
-      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', mb: 3 }}>
-        <TextField
-          label="Año Inicio"
-          type="number"
-          value={anioInicio}
-          onChange={(e) => setAnioInicio(Number(e.target.value))}
-        />
-        <TextField
-          select
-          label="Mes Inicio"
-          value={mesInicio}
-          onChange={(e) => setMesInicio(Number(e.target.value))}
-        >
-          {meses.map((m) => (
-            <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Año Fin"
-          type="number"
-          value={anioFin}
-          onChange={(e) => setAnioFin(Number(e.target.value))}
-        />
-        <TextField
-          select
-          label="Mes Fin"
-          value={mesFin}
-          onChange={(e) => setMesFin(Number(e.target.value))}
-        >
-          {meses.map((m) => (
-            <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
-          ))}
-        </TextField>
-        <SelectorAdministradora onSelect={setAgf} />
-        <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
-        <Button variant="contained" onClick={handleBuscar}>
-          Buscar
-        </Button>
-      </Stack>
+      <Box className="filtros-container" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
+        <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', mb: 3 }}>
+            <TextField
+            label="Año Inicio"
+            type="number"
+            value={anioInicio}
+            onChange={(e) => setAnioInicio(Number(e.target.value))}
+            />
+            <TextField
+            select
+            label="Mes Inicio"
+            value={mesInicio}
+            onChange={(e) => setMesInicio(Number(e.target.value))}
+            >
+            {meses.map((m) => (
+                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+            ))}
+            </TextField>
+            <TextField
+            label="Año Fin"
+            type="number"
+            value={anioFin}
+            onChange={(e) => setAnioFin(Number(e.target.value))}
+            />
+            <TextField
+            select
+            label="Mes Fin"
+            value={mesFin}
+            onChange={(e) => setMesFin(Number(e.target.value))}
+            >
+            {meses.map((m) => (
+                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+            ))}
+            </TextField>
+            <SelectorAdministradora onSelect={setAgf} />
+            <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
+            <Button variant="contained" onClick={handleBuscar}>
+            Buscar
+            </Button>
+        </Stack>
+    </Box>
 
       {loading && <CircularProgress />} 
       {error && <Alert severity="error">{error}</Alert>}

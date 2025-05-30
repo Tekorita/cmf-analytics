@@ -1,0 +1,43 @@
+.filtros-container {
+    background-color: #f5f5f5;
+    padding: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+  }
+
+/* .filtros-container input,
+.filtros-container .MuiInputBase-root,
+.filtros-container .MuiOutlinedInput-root {
+  background-color: white;
+} */
+
+.filtros-container input,
+.filtros-container .MuiInputBase-root,
+.filtros-container .MuiOutlinedInput-root {
+  background-color: white;
+}
+
+/* Añadir fondo blanco al DatePicker */
+.filtros-container input.MuiInputBase-input {
+    background-color: white !important;
+}
+
+/* Asegurar fondo en botones */
+.filtros-container .MuiButton-contained {
+  background-color: #1976d2; /* Azul primario por defecto de MUI */
+  color: white;
+}
+
+.filtros-container .MuiButton-outlined {
+  background-color: white;
+  color: #1976d2;
+  border-color: #1976d2;
+}
+
+.filtros-container .MuiButton-contained:hover {
+    background-color: #115293;
+}
+.filtros-container .MuiButton-outlined:hover {
+    background-color: #f0f0f0;
+}

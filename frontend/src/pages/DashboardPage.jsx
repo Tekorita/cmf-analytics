@@ -5,6 +5,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
 } from "recharts";
+import '../styles/estilos.css';
 import { getValoresComparativos } from "../services/api";
 import SelectorAdministradora from "../components/SelectorAdministradora";
 import SelectorFondo from "../components/SelectorFondo";
@@ -36,7 +37,7 @@ export default function DashboardPage() {
         Dashboard Comparativo de Rentabilidad
       </Typography>
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
+      <Box className="filtros-container" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
         <SelectorAdministradora onSelect={setAgf} />
         <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
         <SelectorSerie fondoRun={fondo?.run_fondo} onChange={setSeries} />
@@ -49,7 +50,17 @@ export default function DashboardPage() {
               value={fecha}
               format="YYYYMMDD"
               onChange={(newValue) => handleFechaChange(newValue, index)}
-              slotProps={{ textField: { size: "small" } }}
+              // slotProps={{ textField: { size: "small" } }}
+              slotProps={{
+                textField: {
+                  size: "small",
+                  InputProps: {
+                    style: {
+                      backgroundColor: "white",
+                    },
+                  },
+                },
+              }}
             />
           ))}
           <Button variant="outlined" onClick={agregarFecha}>
