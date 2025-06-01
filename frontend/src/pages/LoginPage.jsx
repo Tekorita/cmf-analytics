@@ -1,6 +1,8 @@
+// src/pages/LoginPage.jsx
 import { useState } from 'react';
 import { Box, Button, TextField, Typography, Paper, Alert } from '@mui/material';
 import { loginUsuario } from '../services/api';
+import 'animate.css';
 
 export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -25,36 +27,71 @@ export default function LoginPage({ onLogin }) {
   };
 
   return (
-    <Box sx={{
-      display: 'flex',
-      height: '100vh',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f4f6f8',
-    }}>
-      <Paper elevation={3} sx={{ p: 4, width: 300 }}>
-        <Typography variant="h6" gutterBottom>Iniciar Sesión</Typography>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/img/fondo_dashboard.jpg)',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pt: 10,
+      }}
+    >
+      {/* Logo con animación */}
+      <img
+        src="/img/logo.gif"
+        alt="Logo CMF Analytics"
+        style={{ maxWidth: 260, marginBottom: 24 }}
+      />
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {/* Formulario con Paper animado */}
+      <Paper
+        elevation={3}
+        className="animate__animated animate__zoomIn animate__delay-1s"
+        sx={{
+          p: 4,
+          width: 280,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Bienvenidos
+        </Typography>
 
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <TextField
-            fullWidth
             label="Usuario"
+            fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={{ mt: 2, mb: 2 }}
           />
           <TextField
+            label="Contraseña"
             fullWidth
             type="password"
-            label="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={{ mb: 3 }}
           />
-          <Button fullWidth type="submit" variant="contained">
-            Entrar
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            sx={{ mb: 1 }}
+          >
+            Ingresar
           </Button>
         </form>
       </Paper>

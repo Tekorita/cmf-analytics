@@ -1,6 +1,7 @@
 // src/pages/AlertasPage.jsx
 import { useEffect, useState } from 'react';
 import {
+  Container,
   Box,
   Typography,
   Alert,
@@ -63,51 +64,69 @@ export default function AlertasPage() {
   };
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
+    <Container maxWidth="lg" className="animate__animated animate__fadeIn" style={{ animationDelay: '0.2s' }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#13274d' }}>
         🔔 Alertas e Insights Automáticos
       </Typography>
       <Box className="filtros-container" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
-        <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', mb: 3 }}>
-            <TextField
+        <TextField
             label="Año Inicio"
             type="number"
             value={anioInicio}
             onChange={(e) => setAnioInicio(Number(e.target.value))}
-            />
-            <TextField
+            size="small"
+            sx={{ minWidth: 120, height: 40 }}
+        />
+
+        <TextField
             select
             label="Mes Inicio"
             value={mesInicio}
             onChange={(e) => setMesInicio(Number(e.target.value))}
-            >
+            size="small"
+            sx={{ minWidth: 140, height: 40 }}
+        >
             {meses.map((m) => (
-                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+            <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
             ))}
-            </TextField>
-            <TextField
+        </TextField>
+
+        <TextField
             label="Año Fin"
             type="number"
             value={anioFin}
             onChange={(e) => setAnioFin(Number(e.target.value))}
-            />
-            <TextField
+            size="small"
+            sx={{ minWidth: 120, height: 40 }}
+        />
+
+        <TextField
             select
             label="Mes Fin"
             value={mesFin}
             onChange={(e) => setMesFin(Number(e.target.value))}
-            >
+            size="small"
+            sx={{ minWidth: 140, height: 40 }}
+        >
             {meses.map((m) => (
-                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+            <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
             ))}
-            </TextField>
-            <SelectorAdministradora onSelect={setAgf} />
-            <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
-            <Button variant="contained" onClick={handleBuscar}>
+        </TextField>
+
+        <SelectorAdministradora onSelect={setAgf} />
+
+        <SelectorFondo agfNombre={agf?.nombre} onSelect={setFondo} />
+
+        <Button
+            variant="contained"
+            onClick={handleBuscar}
+            size="small"
+            sx={{ height: 40 }}
+        >
             Buscar
-            </Button>
-        </Stack>
-    </Box>
+        </Button>
+      </Box>
+
 
       {loading && <CircularProgress />} 
       {error && <Alert severity="error">{error}</Alert>}
@@ -117,6 +136,6 @@ export default function AlertasPage() {
           {alerta.mensaje}
         </Alert>
       ))}
-    </Box>
+    </Container>
   );
 }

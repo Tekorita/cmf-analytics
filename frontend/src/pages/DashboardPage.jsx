@@ -32,9 +32,9 @@ export default function DashboardPage() {
   const agregarFecha = () => setFechas([...fechas, dayjs()]);
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" gutterBottom>
-        Dashboard Comparativo de Rentabilidad
+    <Container maxWidth="lg" className="animate__animated animate__fadeIn" style={{ animationDelay: '0.2s' }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#13274d' }}>
+       📊 Dashboard Comparativo de Rentabilidad
       </Typography>
 
       <Box className="filtros-container" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>

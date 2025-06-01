@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
+  Container,
   Box,
   Typography,
   TextField,
@@ -49,17 +50,19 @@ export default function RankingPage() {
   }, []);
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
+    <Container maxWidth="lg" className="animate__animated animate__fadeIn" style={{ animationDelay: '0.2s' }}>
+      <Typography variant="h4" gutterBottom sx={{ color: '#13274d' }}>
         📈 Ranking de Fondos por Rentabilidad Mensual
       </Typography>
 
-      <Box className="filtros-container" sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+      <Box className="filtros-container" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
         <TextField
           label="Año"
           type="number"
           value={anio}
           onChange={(e) => setAnio(Number(e.target.value))}
+          size="small"
+          sx={{ minWidth: 120, height: 40 }}
           slotProps={{ input: { min: 2000, max: 2100 } }}
         />
 
@@ -68,6 +71,8 @@ export default function RankingPage() {
           label="Mes"
           value={mes}
           onChange={(e) => setMes(Number(e.target.value))}
+          size="small"
+          sx={{ minWidth: 140, height: 40 }}
         >
           {meses.map((m) => (
             <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
@@ -76,7 +81,13 @@ export default function RankingPage() {
 
         <SelectorAdministradora onSelect={setAgf} />
 
-        <Button variant="contained" color="primary" onClick={() => handleBuscar(1)}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => handleBuscar(1)}
+          sx={{ height: 40 }}
+        >
           Buscar
         </Button>
       </Box>
@@ -114,6 +125,6 @@ export default function RankingPage() {
           color="primary"
         />
       </Box>
-    </Box>
+    </Container>
   );
 }
